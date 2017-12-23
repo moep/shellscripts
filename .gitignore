@@ -1,0 +1,6 @@
+*.git
+*.bak
+*.old
+*.tmp
+*.swp
+_old/
