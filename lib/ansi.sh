@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-echo "ansi"
-
-#declare -a ansi_curpos=()
-
 # control sequence introduce
 function ansi::csi() {
   printf "\033["
@@ -31,7 +27,7 @@ function ansi::lowint() {
   printf "2m%s" "$*"
 }
 
-function ansi::undeline() {
+function ansi::underline() {
   ansi::csi
   printf "4m%s" "$*"
 }
@@ -48,7 +44,7 @@ function ansi::inverse() {
 
 function ansi::reset_bold() {
   ansi::csi
-  print "22m%s" "$*"
+  printf "22m%s" "$*"
 }
 
 function ansi::reset_underline() {
@@ -251,6 +247,11 @@ function ansi::cls() {
   printf "2J"
 }
 
+function ansi::nuke() {
+  ansi::csi
+  printf "3J"
+}
+
 function ansi::delete_line() {
   ansi::csi
   printf "2K"
@@ -273,5 +274,6 @@ function ansi::scroll_up() {
 
 function ansi::scroll_down() {
   ansi::csi
-	printf "%sT" "$1"
+  printf "%sT" "$1"
 }
+

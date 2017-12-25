@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-include lib/ansi.sh
+source bootstrap.sh
 
-start::finish
+include lib/ansi.sh
+include lib/str.sh
+
+bootstrap::finish
 
 echo "main"
 ansi::bold "Fetter Text"; ansi::reset
@@ -40,4 +43,4 @@ echo""
 
 #ansi::cur_print | printf "cur: %s\r\n" 
 ansi::cur_getpos
-
+ansi::red '━'; ansi::reset

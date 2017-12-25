@@ -4,8 +4,8 @@ source loader.sh
 
 loader_addpath .
 
-function start::finish() {
+function bootstrap::finish() {
   loader_finish
 }
 
-load main.sh
+
