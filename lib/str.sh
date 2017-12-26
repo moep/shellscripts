@@ -5,7 +5,7 @@ include lib/math.sh
 
 function str::pad() {
   local width=$1; shift
-  printf "%*b" "${width}" "$*"
+	printf "%-${width}s" "$*"
 }
 
 function str::right() {

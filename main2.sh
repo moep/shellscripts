@@ -42,6 +42,11 @@ printf "CPU: "
 ui::progressbar::green 20 $(os::cpu_usage)
 echo 
 
+echo
+ui::h1 "String"
+str::pad 10 "padded 50"; printf "rechts"
+
+echo
 ui::h1 "OS"
 #__LOADING_ANIMATION='echo -n "#"'
 #os::exec_and_wait sleep 2
@@ -49,7 +54,10 @@ echo "Done"
 echo "Bat:" $(os::battery_percent)"%" $(! os::battery_charging? && echo -n "dis")"charging"
 os::battery_remaining_time
 echo 
-
+os::is_installed? brew && echo "yes" || echo "no"
+os::is_installed? moep && echo "yes" || echo "no"
+os::is_installed?  && echo "yes" || echo "no"
+echo 
 ui::h1 "FX"
 fx::typewriter "This is quite a long line. Typed one char at a time." "This is some extra text" 
 echo

@@ -71,3 +71,12 @@ function os::battery_charging?() {
 function os::battery_remaining_time() {
   pmset -g batt | grep "InternalBattery-0" | cut -f2 | cut -d ';' -f3 | sed -E 's/^ ([0-9]{1,2}:[0-9]{1,2}).*/\1/g'
 }
+
+function os::is_installed?() {
+  if [[ $# -eq 0 ]]; then 
+	  return 1; 
+	fi
+
+  hash $1 2> /dev/null
+  return $? 
+}

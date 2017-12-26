@@ -18,8 +18,10 @@ function fx::typewriter() {
 }
 
 function fx::fade() {
+  ansi::cur_hide
   ansi::cur_save
   ansi::fg_tc 0 0 0
+
   printf "%s" "$*"
   
   for (( i = 0; i <= 255; i+=5 )); do
@@ -28,4 +30,6 @@ function fx::fade() {
     printf "%s" "$*"
     sleep $__FADE_DELAY_SECONDS
   done
+
+  ansi::cur_show
 }
