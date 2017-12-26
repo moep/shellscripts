@@ -216,7 +216,17 @@ function ansi::cur_restore() {
   printf "u"
 }
 
-function ansi::cur_getpos() {
+function ansi::cur_hide() {
+  ansi::csi
+  printf "?25l"
+}
+
+function ansi::cur_show() {
+  ansi::csi
+  printf "?25h"
+}
+
+function ansi::_cur_getpos() {
   # based on a script from http://invisible-island.net/xterm/xterm.faq.html
   exec < /dev/tty
   oldstty=$(stty -g)
@@ -234,6 +244,11 @@ function ansi::cur_getpos() {
 }
 
 function ansi::cur_pos() {
+  if [[ $# -eq 0 ]]; then
+    ansi::_cur_getpos
+    return
+  fi
+
   local row=$1; shift
   local col=$1; 
 

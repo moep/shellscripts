@@ -55,6 +55,6 @@ function ui::progressbar::green() {
   ui::progressbar $1 $2 $(ansi::bright_green) $(ansi::bright_black)
 }
 
-function ui::progressbar::green() {
+function ui::progressbar::yellow() {
   ui::progressbar $1 $2 $(ansi::bright_yellow) $(ansi::bright_black)
 }
