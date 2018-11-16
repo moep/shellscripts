@@ -3,15 +3,22 @@
 include lib/ansi.sh
 include lib/math.sh
 
-function str::pad() {
+function str::pad_right() { 
   local width=$1; shift
-	printf "%-${width}s" "$*"
+  printf "%-${width}s" "$*"
+}
+
+function str::pad_left() {
+  local width=$1; shift
+  printf "%*s" ${width} "$*"
 }
 
 function str::right() {
-  width=$(tput cols)
-  str::pad $width "$*"
+  local width=$(tput cols)
+
+  str::pad_left $width "$*"
 }
+
 
 function str::length() {
   local str=$1
@@ -32,6 +39,15 @@ function str::center() {
 
 }
 
+# Fills the line with <left> <mid> <right> <widht> whereby <mid>
+# is repeated so that the string's length equals <width>.
+#
+# < left  Left string
+# < mid   The filling string
+# < right Right string
+# < widht Width in characters
+#
+# ^ "<left><mid>...<mid><right>"
 function str::fill() {
   local left=$1; shift;
   local mid=$1; shift;
@@ -59,4 +75,24 @@ function str::fill() {
 str::remove_ansi_codes() {
   local clean=$(sed "s,[[0-9;]*[a-zA-Z],,g" <<< "$*")
   printf "%s" "${clean}"
+}
+
+# Draws a line from (<row_s>, <col_s>) to (<row_e>, <col_e>)
+# using <char> as render character.
+#
+# < row_s Start row
+# < col_s Start column
+# < row_e End Row
+# < col_e End column
+str::draw_line() {
+  local row_s=$1
+  local col_s=$2
+  local row_e=$3
+  local row_e=$4
+  local char=$5
+
+  local d_row
+  local d_col
+
+  # TODO finish
 }

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source loader.sh
+source "$(dirname "${BASH_SOURCE[0]}")"/loader.sh
 
-loader_addpath .
+loader_addpath "$(dirname "${BASH_SOURCE[0]}")"
 
 function bootstrap::finish() {
   loader_finish

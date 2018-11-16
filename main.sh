@@ -4,6 +4,7 @@ source bootstrap.sh
 
 include lib/ansi.sh
 include lib/str.sh
+include lib/osx/iterm2.sh
 
 bootstrap::finish
 
@@ -42,5 +43,16 @@ echo""
 #echo ""
 
 #ansi::cur_print | printf "cur: %s\r\n" 
-ansi::cur_getpos
+ansi::cur_pos
 ansi::red '━'; ansi::reset
+
+ansi::nuke
+echo
+iterm2::render_image "img/media.png"
+ansi::cur_save
+ansi::cur_up 5
+ansi::cur_right 10
+printf "moepmoep"
+ansi::cur_restore
+echo 
+echo

@@ -10,6 +10,7 @@ include lib/ui.sh
 include lib/os.sh
 include lib/tmux.sh
 include lib/fx.sh
+include lib/hue.sh
 bootstrap::finish
 
 ansi::cls
@@ -22,12 +23,19 @@ str::length ""
 echo
 str::fill "" "#" "" 5
 echo
+str::pad_left 20 "20 pad left"
+echo
+str::right "rechter rand"
+echo
 
 ui::h1 "Math"
 
 ui::h1 "UI"
 echo "....#....#....#....#"
 ui::progressbar::white 20 30
+ansi::fg_256 253
+str::pad_left 5 "30%"
+ansi::reset
 echo
 printf "CPU: "
 ui::progressbar::white 20 $(os::cpu_usage)
@@ -43,28 +51,36 @@ ui::progressbar::green 20 $(os::cpu_usage)
 echo 
 
 echo
-ui::h1 "String"
-str::pad 10 "padded 50"; printf "rechts"
-
-echo
 ui::h1 "OS"
 #__LOADING_ANIMATION='echo -n "#"'
-#os::exec_and_wait sleep 2
+#os::exec_and_wait sleep 5
 echo "Done"
-echo "Bat:" $(os::battery_percent)"%" $(! os::battery_charging? && echo -n "dis")"charging"
+echo "Bat:" $(os::battery_percent)"%" $(os::battery_charging? || echo -n "dis")"charging"
 os::battery_remaining_time
 echo 
 os::is_installed? brew && echo "yes" || echo "no"
 os::is_installed? moep && echo "yes" || echo "no"
 os::is_installed?  && echo "yes" || echo "no"
+
 echo 
-ui::h1 "FX"
-fx::typewriter "This is quite a long line. Typed one char at a time." "This is some extra text" 
-echo
-fx::fade "This text fades in slowly"
-echo
-ui::h1 "tmux"
-tmux::is_tmux? && echo "tmux" || echo "!tmux"
-tmux::message "Normal"
+#ui::h1 "FX"
+#fx::typewriter "This is quite a long line. Typed one char at a time." "This is some extra text" 
+#echo
+#fx::fade "This text fades in slowly"
+
+#echo
+#ui::h1 "tmux"
+#tmux::is_tmux? && echo "tmux" || echo "!tmux"
+#tmux::message "Normal"
 #sleep 10
 #tmux::message_red "ROT!!"
+
+ui::h1 "LOG"
+LOGLEVEL=2
+log::log "debug" "moep"
+log::x "ljh"
+log::d "löjlj ${K_LOGLEVEL_DEBUG}"
+
+#ui::h1 "HUE"
+#LOGLEVEL=5
+#hue::light_on 0

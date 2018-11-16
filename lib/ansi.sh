@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# escape
+function ansi::esc() {
+  printf "\e"
+}
+
 # control sequence introduce
 function ansi::csi() {
   printf "\033["
@@ -10,6 +15,12 @@ function ansi::osc() {
   printf "\033]"
 }
 
+# bell command
+function ansi::bell() {
+  printf "\a"
+}
+
+# reset all formatting options
 function ansi::reset() {
   ansi::csi
   printf "0m"
@@ -17,21 +28,33 @@ function ansi::reset() {
 
 # Text Decoration
 
+# Activates bold mode
+#
+# < text: Strings to format
 function ansi::bold() {
   ansi::csi
   printf "1m%s" "$*"
 }
 
+# Activates low intensity mode
+#
+# < text: Strings to format
 function ansi::lowint() {
   ansi::csi
   printf "2m%s" "$*"
 }
 
+# Activates underline mode
+#
+# < text: Strings to format
 function ansi::underline() {
   ansi::csi
   printf "4m%s" "$*"
 }
 
+# Activates inverse mode
+#
+# < text: Strings to format
 function ansi::inverse() {
   ansi::csi
   printf "7m%s" "$*"
@@ -236,11 +259,23 @@ function ansi::_cur_getpos() {
   # tput u7 > /dev/tty    # when TERM=xterm (and relatives)
   IFS=';' read -r -d R -a pos
   stty $oldstty
-  # change from one-based to zero based so they work with: tput cup $row $col
-  row=$((${pos[0]:2} - 1))    # strip off the esc-[
-  col=$((${pos[1]} - 1))
+  row=$((${pos[0]:2}))    # strip off the esc-[
+  col=$((${pos[1]}))
 
   echo "${row} ${col}"
+}
+
+# Determins the Terminal's size
+#
+# ^ [array] (rows cols)
+function ansi::terminal_size() {
+  #local pos=()
+  #ansi::cur_save
+  #ansi::cur_pos 99999 99999
+  #pos=$(ansi::cur_pos)
+  #echo "${pos[0]} ${pos[1]}"
+  #ansi::cur_restore
+  printf "%s %s" "$(tput lines)" "$(tput cols)"
 }
 
 function ansi::cur_pos() {

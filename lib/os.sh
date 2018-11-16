@@ -54,11 +54,14 @@ function os::battery_charging?() {
 
   case "${__OS_ARCH}" in
     "Darwin")
+		  echo "xxxxxxxx"
       power_source=$(pmset -g batt | head -n1 | cut -d "'" -f2)
 
-      if [[ "${power_source}" == "Battery Power" ]]; then
+      if [[ "${power_source}" == "AC Power" ]]; then
+        echo "AC"
         return 0
       else
+        echo "BAT"
         return 1
       fi
     ;;
@@ -74,8 +77,8 @@ function os::battery_remaining_time() {
 
 function os::is_installed?() {
   if [[ $# -eq 0 ]]; then 
-	  return 1; 
-	fi
+    return 1; 
+  fi
 
   hash $1 2> /dev/null
   return $? 
