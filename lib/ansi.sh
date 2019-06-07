@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# TODO Function for URLs (altough proprietary)
+# TODO Function for Cursor Shape
+
 # escape
 function ansi::esc() {
   printf "\e"
@@ -184,11 +187,11 @@ function ansi::bright_white() {
 }
 
 function ansi::reset_fg() {
-  ansi::fg_256 "" "$*"
+  ansi::fg_256 "0" "$*"
 }
 
 function ansi::reset_bg() {
-  ansi::bg_256 "" "$*"
+  ansi::bg_256 "0" "$*"
 }
 
 # Cursor
@@ -250,6 +253,11 @@ function ansi::cur_show() {
 }
 
 function ansi::_cur_getpos() {
+  # Workaround to prevent key presses to interfere
+  read -t 0.01
+  read -t 0.01
+  read -t 0.01
+
   # based on a script from http://invisible-island.net/xterm/xterm.faq.html
   exec < /dev/tty
   oldstty=$(stty -g)
@@ -259,13 +267,13 @@ function ansi::_cur_getpos() {
   # tput u7 > /dev/tty    # when TERM=xterm (and relatives)
   IFS=';' read -r -d R -a pos
   stty $oldstty
-  row=$((${pos[0]:2}))    # strip off the esc-[
+  row=$((${pos[0]:2}))   # strip off the esc-[
   col=$((${pos[1]}))
 
   echo "${row} ${col}"
 }
 
-# Determins the Terminal's size
+# Determines the Terminal's size
 #
 # ^ [array] (rows cols)
 function ansi::terminal_size() {

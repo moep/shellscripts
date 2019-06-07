@@ -45,7 +45,7 @@ function str::center() {
 # < left  Left string
 # < mid   The filling string
 # < right Right string
-# < widht Width in characters
+# < width Width in characters
 #
 # ^ "<left><mid>...<mid><right>"
 function str::fill() {
@@ -72,7 +72,7 @@ function str::fill() {
   printf '%s' "${right}"
 }
 
-str::remove_ansi_codes() {
+function str::remove_ansi_codes() {
   local clean=$(sed "s,[[0-9;]*[a-zA-Z],,g" <<< "$*")
   printf "%s" "${clean}"
 }
@@ -84,7 +84,7 @@ str::remove_ansi_codes() {
 # < col_s Start column
 # < row_e End Row
 # < col_e End column
-str::draw_line() {
+function str::draw_line() {
   local row_s=$1
   local col_s=$2
   local row_e=$3
@@ -95,4 +95,21 @@ str::draw_line() {
   local d_col
 
   # TODO finish
+  # TODO move to ui?
+}
+
+# Adds spaces after each character and right trims the string afterwards
+#
+# < str the String to convert
+function str::stretch() {
+  sed -E 's/(.)/\1 /g' <<< $1 | sed -e 's/\s*$//g' | tr -d '\n'
+}
+
+# Converts a hex value to its character representation.
+# Supports single characters only.
+# Has problems with special characters.
+#
+# < char The character to convert, eg: '61'
+function str::from_hex() {
+  printf "\x$1"
 }

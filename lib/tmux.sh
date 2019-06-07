@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+include lib/core.sh
+
 function tmux::is_tmux?() {
   if [[ -z ${TMUX+x} ]]; then 
-    return 1
+    return $RC_ERROR
   else
-    return 0
+    return $RC_OK
   fi
 }
 
@@ -25,6 +27,5 @@ function tmux::message_red() {
 }
 
 function tmux::message_style() {
-  echo "style: $1 $2"
   tmux set message-style "fg=$1,bg=$2"
 }

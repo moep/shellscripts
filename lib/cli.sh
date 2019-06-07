@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 
-function cli::prompt_yn() {
-  local question=$1
-  local input
 
-  echo -n ":: ${question} [Y|n] "
-  read -n1 input
-  echo
+# Waits for a keypress using 'read' and prints the hex value of the input
+function cli::read_key() {
+  read -sN1 key
+  read -sN1 -t 0.0001 k1
+  read -sN1 -t 0.0001 k2
+  read -sN1 -t 0.0001 k3
+  key+=${k1}${k2}${k3}
 
-  case $input in
-    'Y'|'y'|'')
-      return 0
-    ;;
-    *)
-      return 1
-    ;;
-  esac
+  printf "$key" | xxd -p
 }

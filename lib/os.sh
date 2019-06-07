@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __OS_ARCH=$(uname)
-__LOADING_ANIMATION='while true; do echo -n "."; sleep 1; done'
+__LOADING_ANIMATION='os::_loading_animation'
 
 # TODO Split os.sh in os/<arch>.sh; autoinclude
 
@@ -17,24 +17,24 @@ function os::cpu_usage() {
   esac
 }
 
+# TODO -> ui
+function os::_loading_animation() {
+  local pid=$1
+
+  while kill -0 $pid 2> /dev/null; do
+    echo -n "."
+    sleep 1
+  done
+}
+
 function os::exec_and_wait() {
   local pid
-  local pid2
 
-  $@ 2> /dev/null 1>&2 &
+  $@ > /dev/null 1>&2 &
   pid=$! 
   
-  eval $__LOADING_ANIMATION &
+  $__LOADING_ANIMATION $pid
   pid2=$!
-
-  wait $pid
-  kill -9 $pid2 2> /dev/null 1>&2
-  
-  #while kill -0 $pid 2> /dev/null 1>&2; do
-  #  sleep 1
-  #done
-  
-  ansi::delete_line
 }
 
 function os::battery_percent() {
@@ -54,7 +54,6 @@ function os::battery_charging?() {
 
   case "${__OS_ARCH}" in
     "Darwin")
-		  echo "xxxxxxxx"
       power_source=$(pmset -g batt | head -n1 | cut -d "'" -f2)
 
       if [[ "${power_source}" == "AC Power" ]]; then

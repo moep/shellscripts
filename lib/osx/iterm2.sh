@@ -3,6 +3,8 @@
 include lib/ansi.sh
 include lib/tmux.sh
 
+# TODO https://www.iterm2.com/documentation-escape-codes.html
+
 # Sets iTerm2's profile to <profile>.
 #
 # < profile: The profile name to be set
