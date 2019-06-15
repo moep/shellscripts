@@ -2,6 +2,7 @@
 
 # TODO Function for URLs (altough proprietary)
 # TODO Function for Cursor Shape
+# TODO check console color support ($COLORTERM)
 
 # escape
 function ansi::esc() {
@@ -187,43 +188,69 @@ function ansi::bright_white() {
 }
 
 function ansi::reset_fg() {
-  ansi::fg_256 "0" "$*"
+  ansi::csi
+  printf "%s" "39m"
 }
 
 function ansi::reset_bg() {
-  ansi::bg_256 "0" "$*"
+  ansi::csi
+  printf "%s" "49m"
 }
 
 # Cursor
 
 function ansi::cur_up() {
   ansi::csi
-  printf "%sA" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sA" "1"
+  else
+    printf "%sA" "$1"
+  fi
 }
 
 function ansi::cur_down() {
   ansi::csi
-  printf "%sB" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sB" "1"
+  else
+    printf "%sB" "$1"
+  fi
 }
 
 function ansi::cur_right() {
   ansi::csi
-  printf "%sC" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sC" "1"
+  else
+    printf "%sC" "$1"
+  fi
 }
 
 function ansi::cur_left() {
   ansi::csi
-  printf "%sD" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sD" "1"
+  else
+    printf "%sD" "$1"
+  fi
 }
 
 function ansi::cur_next_line() {
   ansi::csi
-  printf "%sE" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sE" "1"
+  else
+    printf "%sE" "$1"
+  fi
 }
 
 function ansi::cur_prev_line() {
   ansi::csi
-  printf "%sF" "$1"
+  if [[ "$1" == "" ]]; then
+    printf "%sF" "1"
+  else
+    printf "%sF" "$1"
+  fi
 }
 
 
@@ -297,6 +324,17 @@ function ansi::cur_pos() {
 
   ansi::csi
   printf "%s;%sH" "${row}" "${col}"
+}
+
+# Moves cursor to given column
+#
+# col (integer) The column to move to
+function ansi::cur_col {
+  local col=$1
+  local lastPos=( $(ansi::cur_pos) )
+
+  ansi::cur_pos "${lastPos[0]}" "${col}" 
+  #ansi::cur_pos "17" "${col}" 
 }
 
 # TODO Other CLS modes

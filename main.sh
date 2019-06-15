@@ -5,6 +5,8 @@ source bootstrap.sh
 include lib/ansi.sh
 include lib/str.sh
 include lib/osx/iterm2.sh
+include lib/core.sh
+include lib/is.sh
 
 bootstrap::finish
 
@@ -51,8 +53,17 @@ echo
 iterm2::render_image "img/media.png"
 ansi::cur_save
 ansi::cur_up 5
-ansi::cur_right 10
+ansi::cur_right 50
 printf "moepmoep"
 ansi::cur_restore
 echo 
 echo
+
+echo "RC_OK: ${RC_OK}"
+echo "true: $(is::_ true "true" && echo "bla")"
+
+echo -n "Move cur to 50"
+ansi::cur_col 50
+echo -n "@@@"
+echo
+

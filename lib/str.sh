@@ -5,7 +5,20 @@ include lib/math.sh
 
 function str::pad_right() { 
   local width=$1; shift
+  
+  # Workaround for printf having problems when called from zsh
+  # See: https://unix.stackexchange.com/questions/350240/why-is-printf-shrinking-umlaut
+  # Idea: Determine the difference between the number of characters and the number of bytes
+  #       and add it to the padding width
+  local numChars=$(str::length "$*")
+  local numBytes=$(printf "%s" "$*" | wc -c | tr -d ' ')
+  local charDifference=$((numBytes-numChars))
+  width=$((width+charDifference))
+  
   printf "%-${width}s" "$*"
+
+  # Version without workaround
+  #printf "%-${width}s" "$*"
 }
 
 function str::pad_left() {
@@ -112,4 +125,11 @@ function str::stretch() {
 # < char The character to convert, eg: '61'
 function str::from_hex() {
   printf "\x$1"
+}
+
+function str::substr() {
+  local length=$1
+  local str=$2
+
+  printf "%s" "${str:0:$length}"
 }

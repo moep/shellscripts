@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 include lib/ansi.sh
+include lib/cli.sh
 include lib/core.sh
+include lib/debug.sh
 include lib/is.sh
 include lib/str.sh
 include lib/tmux.sh
@@ -40,85 +42,54 @@ __MENU_RETURN_VALUES=()
 __MENU_RETURN_LABELS=()
 
 function ui::h1() {
+  local str=$1
+  ansi::bright_black
+  printf "━━━┫ "
+  ansi::blue
   ansi::bold
-  ansi::green
-  printf ">"
-  ansi::yellow
-  printf ">"
-  ansi::red
-  printf "> "
+  str::stretch "${str}"
   ansi::reset
-  printf "$*"
+  str::fill "$(ansi::bright_black)┣" "━" "$(ansi::reset)" $(ui::remaining_columns)
   printf "\r\n"
 }
 
 function ui::h2() {
-  printf "━━━┫"
   ansi::bold
-  printf " $* "
+  ansi::magenta ">>> "
+  ansi::reset_fg
+  printf "%s" "$*"
   ansi::reset
-  printf "┣━━━━━━━━━━━━━"
   printf "\r\n"
 }
 
-# Creates a simple yes / no prompt. Continues as soon as a valid key is pressed.
-#
-# < message
-# < default_selection (optional) The input to be set when user input is empty (= return key)
-# ^ true if yes was selected; false otherwise
-function ui::prompt_yn() {
-  local question=$1; shift
-  local preselection=$1
-
-  local input
-  local hint='[y|n]'
-
-  if ! is::_ empty "${preselection}"; then
-    case $preselection in
-      'y'|'Y')
-        hint='[Y|n]'
+# Prints vertical text at a given Cursor position
+# < direction up|down
+# < text The text to print
+function ui::print_vertical() {
+  local orientation=$1; shift
+  local text=$*
+  
+  for i in $(seq 1 ${#text}); do
+    case "${orientation}" in
+      'up')
+        ansi::cur_up 
       ;;
-      'n'|'N')
-        hint='[y|N]'
+      'down')
+        ansi::cur_down 0
       ;;
       *)
-        show_error "ui::prompt_yn was called with wrong hint."
+        ui::show_error "ui::vertical_text: Invalid direction."
       ;;
     esac
-
-  fi
-
-  echo -n "${question}"
-  ansi::bold
-  echo -n " ${hint} "
-  ansi::reset
-
-  while true; do
-    read -n 1 -s input
-
-    if is::_ empty "${input}"; then
-      input=$preselection
-    fi
-
-    case $input in
-      'Y'|'y')
-        echo $input
-        return $TRUE
-      ;;
-      'N'|'n')
-        echo $input
-        return $FALSE
-      ;;
-    esac
+    printf "%s" "${text:i-1:1}"
+    ansi::cur_left
   done
-
-
-
-
+  
+  debug::print_stack_trace
+  read bla 
 }
 
 # Prints a progress bar of a given width filled to a given percentage
-
 # < width Width in characters
 # < style_active   Style for filled part
 # < style_inactive Style for the unfilled part

@@ -20,6 +20,9 @@ function is::_() {
     even)
       [[ $((val_1%2)) -eq 0 ]]; return $?
     ;;
+    function)
+      declare -f "${val_1}" > /dev/null; return $?
+    ;;
     true)
       [[ "${val_1}" == $TRUE ||  "${val_1}" == "true" ]]; return $?
     ;;

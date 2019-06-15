@@ -1,1 +1,0 @@
-shellscriptloader-0.2/loader.sh

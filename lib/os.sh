@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
+include lib/ansi.sh
+include lib/core.sh
+
 __OS_ARCH=$(uname)
 __LOADING_ANIMATION='os::_loading_animation'
+__LOADING_ANIMATION_FRAMES=("   " ".  " ".. " "...")
 
 # TODO Split os.sh in os/<arch>.sh; autoinclude
 
@@ -20,27 +24,47 @@ function os::cpu_usage() {
 # TODO -> ui
 function os::_loading_animation() {
   local pid=$1
+  local currentFrame=0
+  local numFrames=${#__LOADING_ANIMATION_FRAMES[@]}
 
+  ansi::cur_save
   while kill -0 $pid 2> /dev/null; do
-    echo -n "."
-    sleep 1
+    ansi::cur_restore
+    echo -n "${__LOADING_ANIMATION_FRAMES[$currentFrame]}"
+    
+    currentFrame=$((currentFrame+1))
+    currentFrame=$((currentFrame%numFrames))
+    sleep 0.5
   done
+  
+  ansi::cur_restore
+
+  if wait $pid; then
+    ansi::cur_col 50
+    ansi::bg_256 2; ansi::bold; printf "  OK  "; ansi::reset 
+    return $RC_OK
+  else 
+    ansi::cur_col 50
+    ansi::bg_256 1; ansi::bold; printf " FAIL "; ansi::reset 
+    return $RC_ERROR
+  fi
+  
 }
 
 function os::exec_and_wait() {
   local pid
 
-  $@ > /dev/null 1>&2 &
+  $@ > /dev/null 2>&1 &
   pid=$! 
   
   $__LOADING_ANIMATION $pid
-  pid2=$!
+  return $?
 }
 
 function os::battery_percent() {
   case "${__OS_ARCH}" in
     "Darwin")
-       pmset -g batt | grep "InternalBattery-0" | cut -f2 | cut -d ';' -f1 | cut -d '%' -f1
+      pmset -g batt | grep "InternalBattery-0" | cut -f2 | cut -d ';' -f1 | cut -d '%' -f1
     ;;
     *)
       echo "TODO"
@@ -82,3 +106,4 @@ function os::is_installed?() {
   hash $1 2> /dev/null
   return $? 
 }
+

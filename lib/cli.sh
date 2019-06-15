@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+include lib/ansi.sh
 
 # Waits for a keypress using 'read' and prints the hex value of the input
 function cli::read_key() {
@@ -10,4 +10,59 @@ function cli::read_key() {
   key+=${k1}${k2}${k3}
 
   printf "$key" | xxd -p
+}
+
+# Creates a simple yes / no prompt. Continues as soon as a valid key is pressed.
+#
+# < message
+# < default_selection (optional) The input to be set when user input is empty (= return key)
+# ^ true if yes was selected; false otherwise
+function cli::prompt_yn() {
+  local question=$1; shift
+  local preselection=$1
+
+  local input
+  # [y|n]
+  local hint='['"$(ansi::green 'y'; ansi::white;)|$(ansi::red 'n'; ansi::white;)"']'
+
+  if ! is::_ empty "${preselection}"; then
+    case $preselection in
+      'y'|'Y')
+        # [Y|n]
+        hint='['"$(ansi::green 'Y'; ansi::white;)|$(ansi::red 'n'; ansi::white;)"']'
+      ;;
+      'n'|'N')
+        # [y|N]
+        hint='['"$(ansi::green 'y'; ansi::white;)|$(ansi::red 'N'; ansi::white;)"']'
+      ;;
+      *)
+        show_error "ui::prompt_yn was called with wrong hint."
+      ;;
+    esac
+
+  fi
+
+  echo -n "${question}"
+  ansi::bold
+  echo -n " ${hint} "
+  ansi::reset
+
+  while true; do
+    read -n 1 -s input
+
+    if is::_ empty "${input}"; then
+      input=$preselection
+    fi
+
+    case $input in
+      'Y'|'y')
+        echo $input
+        return $TRUE
+      ;;
+      'N'|'n')
+        echo $input
+        return $FALSE
+      ;;
+    esac
+  done
 }
