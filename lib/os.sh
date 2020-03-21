@@ -5,7 +5,7 @@ include lib/core.sh
 
 __OS_ARCH=$(uname)
 __LOADING_ANIMATION='os::_loading_animation'
-__LOADING_ANIMATION_FRAMES=("   " ".  " ".. " "...")
+__LOADING_ANIMATION_FRAMES=(" WAIT " " wAIT " " WaIT " " WAiT " " WAIt " " WAiT " " WaIT " " wAIT ")
 
 # TODO Split os.sh in os/<arch>.sh; autoinclude
 
@@ -17,6 +17,7 @@ function os::cpu_usage() {
     ;;
     *)
       printf "TODO"
+      # Linux -> Distro (gentoo, pop os, arco linux, void linux ...)
     ;;
   esac
 }
@@ -26,10 +27,17 @@ function os::_loading_animation() {
   local pid=$1
   local currentFrame=0
   local numFrames=${#__LOADING_ANIMATION_FRAMES[@]}
-
+  local animationCol=50
+  
+  ansi::cur_col "${animationCol}"
   ansi::cur_save
+  ansi::bg_256 8 "      "
+  ansi::reset_fg
   while kill -0 $pid 2> /dev/null; do
     ansi::cur_restore
+    ansi::bg_256 8 
+    ansi::reset_fg
+    ansi::bold
     echo -n "${__LOADING_ANIMATION_FRAMES[$currentFrame]}"
     
     currentFrame=$((currentFrame+1))
@@ -40,11 +48,11 @@ function os::_loading_animation() {
   ansi::cur_restore
 
   if wait $pid; then
-    ansi::cur_col 50
+    ansi::cur_col "${animationCol}"
     ansi::bg_256 2; ansi::bold; printf "  OK  "; ansi::reset 
     return $RC_OK
   else 
-    ansi::cur_col 50
+    ansi::cur_col "${animationCol}"
     ansi::bg_256 1; ansi::bold; printf " FAIL "; ansi::reset 
     return $RC_ERROR
   fi

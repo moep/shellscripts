@@ -22,11 +22,11 @@ declare -g -r RC_USAGE=64
 # files.
 declare -g -r RC_DATAERR=65
 
-core::print_error() {
+function core::print_error() {
   (>&2 printf "%s\r\n" "$@")
 }
 
-core::assert_available() {
+function core::assert_available() {
   for program; do
     if ! os::is_installed? "${program}"; then
       core::print_error "ERROR: '${program}' is not installed. Exiting."

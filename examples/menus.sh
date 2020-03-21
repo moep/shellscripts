@@ -104,7 +104,7 @@ function main() {
 
   echo
   ansi::fg_256 250
-  ui::prompt_yn "Continue installation?" "y"
+  cli::prompt_yn "Continue installation?" "y"
   rc=$?
   ansi::reset
 
@@ -121,11 +121,11 @@ function main() {
   print_header 'Installation'
 
 
-  echo -n 'Installing'
+  printf 'Installing'
   ui::disable_keyboard_input
   os::exec_and_wait sleep 4 2> /dev/null
   ui::enable_keyboard_input
-  echo -n "Done."
+  #echo -n "Done."
 
   echo
   ui::show_error "This is just a mockup. Nothing was installed."

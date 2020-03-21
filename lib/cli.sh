@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 include lib/ansi.sh
 
+function cli::raw() {
+  stty raw
+}
+
+function cli::sane() {
+  stty sane
+}
+
 # Waits for a keypress using 'read' and prints the hex value of the input
 function cli::read_key() {
   read -sN1 key
@@ -9,6 +17,11 @@ function cli::read_key() {
   read -sN1 -t 0.0001 k3
   key+=${k1}${k2}${k3}
 
+  printf "$key" | xxd -p
+}
+
+function cli::read_single_key() {
+  read -sN1 key
   printf "$key" | xxd -p
 }
 
@@ -23,17 +36,17 @@ function cli::prompt_yn() {
 
   local input
   # [y|n]
-  local hint='['"$(ansi::green 'y'; ansi::white;)|$(ansi::red 'n'; ansi::white;)"']'
+  local hint='['"$(ansi::green 'y'; ansi::reset_fg;)|$(ansi::red 'n'; ansi::reset_fg;)"']'
 
   if ! is::_ empty "${preselection}"; then
     case $preselection in
       'y'|'Y')
         # [Y|n]
-        hint='['"$(ansi::green 'Y'; ansi::white;)|$(ansi::red 'n'; ansi::white;)"']'
+        hint='['"$(ansi::green 'Y'; ansi::reset_fg)|$(ansi::red 'n'; ansi::reset_fg;)"']'
       ;;
       'n'|'N')
         # [y|N]
-        hint='['"$(ansi::green 'y'; ansi::white;)|$(ansi::red 'N'; ansi::white;)"']'
+        hint='['"$(ansi::green 'y'; ansi::reset_fg;)|$(ansi::red 'N'; ansi::reset_fg)"']'
       ;;
       *)
         show_error "ui::prompt_yn was called with wrong hint."

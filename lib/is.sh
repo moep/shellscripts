@@ -14,11 +14,17 @@ function is::_() {
     declared)
       [[ -z "${val_1}" ]]; return $?
     ;;
+    directory)
+      [[ -d "${val_1}" ]]; return $?
+    ;;
     empty)
       [[ "${val_1}" == "" ]]; return $?
     ;;
     even)
       [[ $((val_1%2)) -eq 0 ]]; return $?
+    ;;
+    file)
+      [[ -f "${val_1}" ]]; return $?
     ;;
     function)
       declare -f "${val_1}" > /dev/null; return $?

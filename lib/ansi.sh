@@ -291,6 +291,7 @@ function ansi::_cur_getpos() {
   stty raw -echo min 0
   # on my system, the following line can be replaced by the line below it
   echo -en "\033[6n" > /dev/tty
+  # TODO if term in ...
   # tput u7 > /dev/tty    # when TERM=xterm (and relatives)
   IFS=';' read -r -d R -a pos
   stty $oldstty
@@ -334,7 +335,6 @@ function ansi::cur_col {
   local lastPos=( $(ansi::cur_pos) )
 
   ansi::cur_pos "${lastPos[0]}" "${col}" 
-  #ansi::cur_pos "17" "${col}" 
 }
 
 # TODO Other CLS modes

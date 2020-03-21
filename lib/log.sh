@@ -1,34 +1,33 @@
-#!/usr/bin/env bash
+include lib/ansi.sh
 
-declare -c K_LOGLEVEL_NONE=0
-declare -c K_LOGLEVEL_FATAL=1
-# ...
-declare -c K_LOGLEVEL_DEBUG=5
+readonly COLOR_DEBUG=$(ansi::white)
+readonly COLOR_INFO=$(ansi::fg_256 245)
+readonly COLOR_WARN=$(ansi::yellow)
+readonly COLOR_ERROR=$(ansi::red)
 
-echo "LOG"
+readonly PREFIX_DEBUG="${COLOR_DEBUG}┃ "
+readonly PREFIX_INFO="${COLOR_INFO}┃"
+readonly PREFIX_WARN="${COLOR_WARN}┃ "
+readonly PREFIX_ERROR="${COLOR_ERROR}┃ "
 
-function log::_init() {
-  if [[ -z $LOGLEVEL ]]; then
-    LOGLEVEL=$K_LOGLEVEL_NONE
-    echo "xxx setting loglevel default"
-  else 
-    echo "xxx using loglevel ${LOGLEVEL}"
-  fi
-}
-
-function log::log() {
-  local log_level=$1; shift
-  
-  printf "%s %s\r\n" "${log_level}" "$*"
-}
-
-function log::x() {
-  echo "xxxx"
-}
-
+# TODO get top caller
+LOG_TAG="${COLOR_INFO} ${BASH_SOURCE[4]}: $(ansi::reset)" 
 function log::d() {
-  log::log "DEBUG ${LOGLEVEL}" $* 
+  printf "%s%s\r\n" "${PREFIX_DEBUG}" "$*"
+  ansi::reset
 }
 
-# initialize module
-log::_init
+function log::i() {
+  printf "%s%s%s\r\n" "${PREFIX_INFO}" "${LOG_TAG}" "$*"
+  ansi::reset
+}
+
+function log::w() {
+  printf "%s%s\r\n" "${PREFIX_WARN}" "$*"
+  ansi::reset
+}
+
+function log::e() {
+  printf "%s%s\r\n" "${PREFIX_ERROR}" "$*"
+  ansi::reset
+}

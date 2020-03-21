@@ -29,3 +29,11 @@ function tmux::message_red() {
 function tmux::message_style() {
   tmux set message-style "fg=$1,bg=$2"
 }
+
+function tmux::escape() {
+  if tmux::is_tmux?; then
+    printf '\ePtmux;\e%s\e\\' "$@"
+  else 
+    printf '%s' "$@"
+  fi
+}

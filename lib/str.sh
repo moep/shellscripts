@@ -75,13 +75,13 @@ function str::fill() {
     width=$1; shift
     width=$(math::round $width)
   fi
- 
+
   width_left=$(str::length <<< $left)
   width_right=$(str::length <<< $right)
- 
+
   width=$(math::calc "${width} - ${width_left} - ${width_right}")
   printf '%s' "${left}"
-  printf "%${width}s" | tr ' ' $mid
+  printf "%${width}s" | tr ' ' "${mid}"
   printf '%s' "${right}"
 }
 
@@ -133,3 +133,22 @@ function str::substr() {
 
   printf "%s" "${str:0:$length}"
 }
+
+function str::split() {
+  local delimiter=$1; shift
+  local tokens=(${@//$delimiter/ })
+
+  echo "${tokens[@]}"
+}
+
+function str::hex_to_rgb() {
+  local hexStr=$1
+  
+  # Remove trailing #
+  if [[ "${hexStr:0:1}" == "#" ]]; then
+    hexStr="${hexStr:1:6}"
+  fi
+
+  printf '%d %d %d' "0x${hexStr:0:2}" "0x${hexStr:2:2}" "0x${hexStr:4:2}"
+}
+
