@@ -51,12 +51,12 @@ __MENU_SCROLL_OFFSET=0
 function ui::h1() {
   local str=$1
   ansi::bright_black
-  printf "━━━┫ "
+  printf "===[ "
   ansi::blue
   ansi::bold
   str::stretch "${str}"
   ansi::reset
-  str::fill "$(ansi::bright_black)┣" "━" "$(ansi::reset)" $(ui::remaining_columns)
+  str::fill "$(ansi::bright_black) ]" "=" "$(ansi::reset)" $(ui::remaining_columns)
   printf "\r\n"
 }
 
