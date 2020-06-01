@@ -81,7 +81,7 @@ function str::fill() {
 
   width=$(math::calc "${width} - ${width_left} - ${width_right}")
   printf '%s' "${left}"
-  printf "%${width}s" | tr ' ' "${mid}"
+  printf "%${width}s" | sed "s/ /${mid}/g"
   printf '%s' "${right}"
 }
 
