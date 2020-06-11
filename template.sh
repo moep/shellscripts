@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then
-  DIR="$PWD";
+if [[ -z "${BASH_SCRIPT_PATH}" ]]; then
+  echo "ERROR: BASH_SCRIPT_PATH is not set!"
+  exit 1
 fi
 
-source ${DIR}/bootstrap.sh
+source ${BASH_SCRIPT_PATH}/bootstrap.sh
 include lib/ansi.sh
 include lib/ui.sh
 bootstrap::finish
