@@ -8,6 +8,7 @@ fi
 source ${DIR}/../bootstrap.sh
 include lib/ansi.sh
 include lib/cli.sh
+include lib/core.sh
 include lib/os.sh
 include lib/str.sh
 include lib/ui.sh
@@ -15,10 +16,12 @@ bootstrap::finish
 
 trap on_ctrl_c INT
 
+core::assert_available bc
+
 function main() {
 
   # Start with a blank screen and disable cursor
-  clear
+  #clear
   ansi::cur_hide
 
   #ansi::fg_256 $((RANDOM%256))

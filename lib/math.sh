@@ -2,8 +2,6 @@
 
 include lib/core.sh
 
-# TODO why "command not found"?!
-#core::assert_available bc
 
 # TODO Can now be done via bc; keep as an alias?
 function math::round() {
@@ -22,3 +20,7 @@ function math::calc() {
 function math::to_hex() {
   echo "obase=16" | bc 
 }
+
+
+# TODO why "command not found"?!
+core::assert_available bc
