@@ -28,7 +28,7 @@ function cli::read_single_key() {
 # Creates a simple yes / no prompt. Continues as soon as a valid key is pressed.
 #
 # < message
-# < default_selection (optional) The input to be set when user input is empty (= return key)
+# < default_selection (optional) The input (y|n) to be set when user input is empty (= return key)
 # ^ true if yes was selected; false otherwise
 function cli::prompt_yn() {
   local question=$1; shift

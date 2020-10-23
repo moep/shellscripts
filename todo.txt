@@ -1,1 +1,2 @@
 https://www.bughunter2k.de/blog/cursor-controlled-selectmenu-in-bash
+gawk -f shellscriptloader-0.2/compiler-20141212.gawk -- -a . -s /bin/hash template.sh
