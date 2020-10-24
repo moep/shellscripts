@@ -10,6 +10,8 @@ opt_dl=false
 opt_force=false
 opt_uninstall=false
 
+__last_file=""
+
 function is_from_source() {
   local remote=$(cd "${SRC_DIR}" && git remote -v 2> /dev/null | head -1 | cut -f 2 | cut -d ' ' -f 1)
   if [[ "${remote}" == "${REPOSITORY}" ]]; then
@@ -56,46 +58,125 @@ function promptyn() {
   done
 }
 
-function has_fish_config() {
-  [[ -f "${FISH_DIR}/config.fish" ]]
+function has_fish() {
+  command -v fish > /dev/null
 }
 
-function fish_config_contains_path() {
-  grep -q 'set -ux BASH_SCRIPT_PATH' "${FISH_DIR}/config.fish"
+
+function has_bash() {
+  command -v bash > /dev/null
+}
+
+function append_line() {
+  local file="$1"
+  local line="$2"
+  local pattern="${3:-$line}"
+
+  local line_no=""
+
+  if [[ "${file}" != "${__last_file}" ]]; then
+    __last_file="${file}"
+    echo
+    echo " == ${file} =="
+  fi
+
+  if [[ ! -f "${file}" ]]; then
+    echo "ERROR: File not found."
+    return 1
+  fi
+
+  line_no=$(grep -nF "${pattern}" "${file}" | sed 's/:.*//' | tr '\n' ' ')
+
+  if [[ -n "${line_no}" ]]; then
+    echo " ~ ${line}"
+  else
+    echo " + ${line}"
+    echo "${line}" >> "${file}"
+  fi
+
+}
+
+function remove_line() {
+  local file="$1"
+  local pattern="$2"
+
+  local line_nums=()
+  local line=""
+  local sed_nums=""
+  local file_src=$(readlink "${file}")
+
+  file=${file_src:-"$file"}
+
+  if [[ "${file}" != "${__last_file}" ]]; then
+    __last_file="${file}"
+    echo
+    echo " == ${file} =="
+  fi
+
+  line_nums=($(grep -nE "${pattern}" "${file}" | sed 's/:.*//' | tr '\n' ' ' | sort))
+
+  for line_no in $line_nums; do
+    echo " - $(sed -n "${line_no}p" "${file}")"
+    sed_nums+="${line_no}d;"
+  done
+
+  sed -i.bak -e "${sed_nums}" "${file}"
 }
 
 function install() {
+  # shellscript lib
   echo " [*] Copying sources from ${SRC_DIR} to ${LIB_DIR}"
   cp "${SRC_DIR}/bootstrap.sh" "${LIB_DIR}/"
   cp -r "${SRC_DIR}/contrib" "${LIB_DIR}/"
   cp -r "${SRC_DIR}/lib" "${LIB_DIR}/"
   cp -r "${SRC_DIR}/shellscriptloader-0.2" "${LIB_DIR}/"
   
-  if has_fish_config && ! fish_config_contains_path; then
-    echo " [*] Found${FISH_DIR}/config.fish."
+  # add library entry to fish config
+  if has_fish; then
     if promptyn "Do you want to add the library path variable to your config.fish?"; then
-      echo " == ~/.config/fish/fish.config =="
-      echo " +"
-      echo " + # Autmatically added by shell script lib installer"
-      echo " + set -gx BASH_SCRIPT_PATH ${LIB_DIR}"
+      append_line "${FISH_DIR}/config.fish" \
+        "# Autmatically added by shell script lib installer"
 
-      echo "" >> "${FISH_DIR}/config.fish"
-      echo "# Autmatically added by shell script lib installer" >> "${FISH_DIR}/config.fish"
-      echo "set -gx BASH_SCRIPT_PATH ${LIB_DIR}" >> "${FISH_DIR}/config.fish"
-      echo
+      append_line "${FISH_DIR}/config.fish" \
+        "set -gx BASH_SCRIPT_PATH ${LIB_DIR}" \
+        "set -gx BASH_SCRIPT_PATH" 
+    fi
+  fi
+
+  # add library to bash config
+  if has_bash; then
+    if promptyn "Do you want to add the library path variable to your .bashrc?"; then
+      append_line "${HOME}/.bashrc" \
+        "# Autmatically added by shell script lib installer"
+
+      append_line "${HOME}/.bashrc" "BASH_SCRIPT_PATH=${LIB_DIR}" 
     fi
   fi
 }
 
 function uninstall() {
   promptyn "Do you really want to remove the shell script library?" || exit 1
-  
+
   echo " [*] Removing ${LIB_DIR}"
   rm -rf "${LIB_DIR}"
 
-  # TODO remove from configs
+  if has_fish; then
+    echo " [*] Removing entries from ${FISH_DIR}/config.fish"
 
-  echo " !! Please clean your config.fish | .bashrc manually !!"
+    remove_line "${FISH_DIR}/config.fish" \
+        "# Autmatically added by shell script lib installer"
+
+    remove_line "${FISH_DIR}/config.fish" "^set -gx BASH_SCRIPT_PATH"
+  fi
+
+  if has_bash; then
+    echo " [*] Removing entries from ${HOME}/.bashrc"
+
+    remove_line "${HOME}/.bashrc" \
+      "# Autmatically added by shell script lib installer"
+
+    remove_line "${HOME}/.bashrc" "BASH_SCRIPT_PATH=${LIB_DIR}" 
+  fi
 
   exit 0
 }
