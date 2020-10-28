@@ -43,7 +43,7 @@ function clone() {
   curl -sL https://github.com/moep/shellscripts/archive/master.tar.gz -o "${tmp_dir}/shellscripts.tar.gz" || return 1
 
   echo " [*] Extracting to ${PORTS_DIR}"
-  tar -xzf "${tmp_dir}/shellscripts.tar.gz" --directory "${PORTS_DIR}/" || return 1
+  tar xzf "${tmp_dir}/shellscripts.tar.gz" -C "${PORTS_DIR}/" || return 1
   mv "${PORTS_DIR}/shellscripts-master" "${PORTS_DIR}/shellscripts" || return 1
 
   SRC_DIR="${PORTS_DIR}/shellscripts"
