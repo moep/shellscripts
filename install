@@ -1,39 +1,52 @@
 #!/usr/bin/env bash
 
 REPOSITORY="https://github.com/moep/shellscripts"
+REPOSITORY_TAR_GZ="https://github.com/moep/shellscripts/archive/master.tar.gz"
 LIB_DIR="${HOME}/.local/lib/shellscripts"
+PORTS_DIR="${HOME}/.local/ports"
 SRC_DIR=$(dirname "${BASH_SOURCE[0]}")
-FISH_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/fish
+FISH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/fish"
 
 # 1 = false; 0 = true
 opt_dl=false
-opt_force=false
+opt_keep_sources=false
 opt_uninstall=false
 
 __last_file=""
 
 function is_from_source() {
   local remote=$(cd "${SRC_DIR}" && git remote -v 2> /dev/null | head -1 | cut -f 2 | cut -d ' ' -f 1)
-  if [[ "${remote}" == "${REPOSITORY}" ]]; then
-    return 0
-  else 
+  if [[ -z "${remote}" ]]; then
     return 1
+  else 
+    return 0
   fi
 }
 
 function clone() {
   local tmp_dir=$(mktemp -d)
-  rc=$?
-  
-  if [[ $rc -ne 0 ]]; then
-    echo "Could not create tmp dir."
-    exit 1
+
+  if [[ -z "${tmp_dir}" ]]; then
+    return 1
   fi
 
-  echo " [*] Cloning into ${tmp_dir}..."
-  git clone "${REPOSITORY}" "${tmp_dir}"
+  if [[ ! -d "${PORTS_DIR}" ]]; then
+    echo " [*] Creating directory '${PORTS_DIR}'"
+    mkdir -p "${PORTS_DIR}" || return 1
+  fi
 
-  SRC_DIR=$tmp_dir
+  if ! $opt_keep_sources; then
+    PORTS_DIR="${tmp_dir}"
+  fi
+
+  echo " [*] Downloading ${REPOSITORY_TAR_GZ} to ${tmp_dir}/shellscripts.tar.gz"
+  curl -sL https://github.com/moep/shellscripts/archive/master.tar.gz -o "${tmp_dir}/shellscripts.tar.gz" || return 1
+
+  echo " [*] Extracting to ${PORTS_DIR}"
+  tar -xzf "${tmp_dir}/shellscripts.tar.gz" --directory "${PORTS_DIR}/" || return 1
+  mv "${PORTS_DIR}/shellscripts-master" "${PORTS_DIR}/shellscripts" || return 1
+
+  SRC_DIR="${PORTS_DIR}/shellscripts"
 }
 
 function promptyn() {
@@ -186,7 +199,7 @@ function print_help() {
   cat <<EOF
 OPTS:
   --download       Force download even if called from git sources.
-  --force          Force reinstallation.
+  --keep-sources   Keep installer sources in ${PORTS_DIR}.
   --uninstall      Uninstall and exit.
   -h, --help, -?   Print this message.
 EOF
@@ -199,8 +212,8 @@ function parse_args() {
         opt_dl=true
         shift
       ;;
-      --force)
-        opt_force=true
+      --keep-sources)
+        opt_keep_sources=true
         shift
       ;;
       --help|-h|-?)
@@ -224,10 +237,10 @@ function main() {
   #has_fish_config && echo "has fish config"
   #is_from_source && echo "is from source"
   #$opt_dl && echo "opt_dl"
-  #$opt_force && echo "opt_force"
+  #$opt_keep_sources && echo "opt_keep_sources"
+  #return 0
 
   if [[ -d "${LIB_DIR}" ]]; then
-    echo "DEBUG: " $(pwd $LIB_DIR)
     echo "It looks like the library is already installed at ${LIB_DIR}."
     promptyn "Do you want to proceed?" || exit 0
   else
