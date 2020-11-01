@@ -163,7 +163,7 @@ function install() {
       append_line "${HOME}/.bashrc" \
         "# Autmatically added by shell script lib installer"
 
-      append_line "${HOME}/.bashrc" "BASH_SCRIPT_PATH=${LIB_DIR}" 
+      append_line "${HOME}/.bashrc" "export BASH_SCRIPT_PATH=${LIB_DIR}" 
     fi
   fi
 }
@@ -189,7 +189,7 @@ function uninstall() {
     remove_line "${HOME}/.bashrc" \
       "# Autmatically added by shell script lib installer"
 
-    remove_line "${HOME}/.bashrc" "BASH_SCRIPT_PATH=${LIB_DIR}" 
+    remove_line "${HOME}/.bashrc" "export BASH_SCRIPT_PATH=${LIB_DIR}" 
   fi
 
   exit 0
