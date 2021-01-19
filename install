@@ -11,10 +11,14 @@ FISH_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/fish"
 opt_dl=false
 opt_keep_sources=false
 opt_uninstall=false
+opt_is_from_archive=false
 
 __last_file=""
 
 function is_from_source() {
+  # Treat as source dir when used specified that this script has been extracted from an archive
+  ${opt_is_from_archive} && return 0
+
   local remote=$(cd "${SRC_DIR}" && git remote -v 2> /dev/null | head -1 | cut -f 2 | cut -d ' ' -f 1)
   if [[ -z "${remote}" ]]; then
     return 1
@@ -199,10 +203,11 @@ function print_help() {
   echo "$(basename $0) (OPTS)"
   cat <<EOF
 OPTS:
-  --download       Force download even if called from git sources.
-  --keep-sources   Keep installer sources in ${PORTS_DIR}.
-  --uninstall      Uninstall and exit.
-  -h, --help, -?   Print this message.
+  --download         Force download even if called from git sources.
+  --keep-sources     Keep installer sources in ${PORTS_DIR}.
+  --is-from-archive  Prevents cloning the sources if there is no .git directory.
+  --uninstall        Uninstall and exit.
+  -h, --help, -?     Print this message.
 EOF
 }
 
@@ -215,6 +220,10 @@ function parse_args() {
       ;;
       --keep-sources)
         opt_keep_sources=true
+        shift
+      ;;
+      --is-from-archive)
+        opt_is_from_archive=true
         shift
       ;;
       --help|-h|-?)
